@@ -1,0 +1,39 @@
+{% extends "./base.html" %}
+
+{% block title %}
+    Login Page
+{% endblock %}
+
+{% block body %}
+    
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        
+        <p>
+            <label for="id_username">Username:</label>
+            {{ form.username }}
+        </p>
+
+        <p>
+            <label for="id_password">Password:</label>
+            {{ form.password }}
+        </p>
+        
+    
+        <input type="hidden" name="next" value="{{ next }}">
+        <input type="submit" value="Login">
+    </form>
+
+    {% if form.errors %}
+        <p>
+            Your username and password didn't match. Please try again.
+        </p>
+    {% endif %}
+
+    <p>
+        <a href="{% url 'password_reset' %}">
+          Forgotten your password?
+        </a>
+    </p>
+
+{% endblock %}
