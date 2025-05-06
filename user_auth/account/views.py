@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+
 # Create your views here.
 
 @login_required
@@ -22,20 +24,30 @@ def profile(request):
 from django.shortcuts import render, redirect
 from .forms import RegisterForm
 
-
 # Create your views here.
-def register(response):
-    if response.method == "POST":
-        form = RegisterForm(response.POST)
-        print(1)
-        if form.is_valid():
-            print(2)
-            form.save()
-        print(3)
-        return redirect('login')
+
+
+def register(request):
+    if request.method == 'POST':
+        user_form = RegisterForm(request.POST)
+        if user_form.is_valid():
+            # Create a new user object but avoid saving it yet
+            new_user = user_form.save(commit=False)
+            # Set the chosen password
+            new_user.set_password(
+                user_form.cleaned_data['password']
+            )
+            # Save the User object
+            new_user.save()
+            return render(
+               request,
+               'registration/registration_done.html',
+               {'new_user': new_user}
+           )
     else:
-        print(4)
-        form = RegisterForm()
-    
-    print(5)
-    return render(response, "registration/register.html", {"form":form})
+        user_form = RegisterForm()
+    return render(
+        request,
+        'registration/register.html',
+        {'form': user_form}
+    )
